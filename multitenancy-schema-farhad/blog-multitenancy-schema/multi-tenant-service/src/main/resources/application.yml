@@ -1,0 +1,30 @@
+server:
+  port: 8089
+spring:
+  application:
+    name: blog-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/blog
+    username: postgres
+    password: qwer
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+multitenancy:
+  schema-cache:
+    maximumSize: 100
+    expireAfterAccess: 10
+  tenant:
+    repository:
+      packages: se.callista.blog.service.repository
+    entityManager:
+      packages: se.callista.blog.service.domain
+    liquibase:
+      changeLog: classpath:db/changelog/db.changelog-tenant.yaml
+
+tenantManagement:
+  uri: http://localhost:8088

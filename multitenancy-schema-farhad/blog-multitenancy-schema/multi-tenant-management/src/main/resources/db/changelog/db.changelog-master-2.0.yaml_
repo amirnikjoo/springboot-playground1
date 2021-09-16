@@ -1,0 +1,16 @@
+databaseChangeLog:
+
+- changeSet:
+    id: tenant-2
+    author: bjobes
+    comment: "Some comments go here"
+    changes:
+      - insert:
+          tableName: tenant
+          columns:
+            - column:
+                name: tenant_id
+                value: "tenant1"
+            - column:
+                name: schema
+                value: "tenant1"

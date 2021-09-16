@@ -1,0 +1,69 @@
+
+
+
+entity NativeLanguage {
+	title String
+}
+
+entity Consumer {
+	ip String,
+    macAddress String,
+    deviceId String,
+    userType ConsumerType
+}
+
+entity PersonalInfo {
+    name String,
+    lastName String,
+    username String,
+    consumerPhoto String,
+    backgroundPhoto String,
+    countryCode String,
+    authenticationType AuthenticationType,
+    email String,
+    phoneNumber String,
+    address String,
+    password String,//base64, not plain
+}
+
+
+entity StudyPreferences {
+	spacedRepetition SpacedRepetition,
+    courseIntensity CourseIntensity,
+    learningType LearningType
+}
+
+enum SpacedRepetition {
+	REPEAT_THREE_TIMES, REPEAT_FIVE_TIMES, REPEAT_SEVEN_TIMES
+}
+
+enum LearningType {
+	TYPE_A, TYPE_B, TYPE_C
+}
+
+
+enum ConsumerType{
+	VISITOR, CUSTOMER, STUDENT, GRADUATED
+}
+
+enum AuthenticationType {
+	EMAIL, MOBILE
+}
+
+enum CourseIntensity {
+	REGULAR, INTENSIVE
+}
+
+relationship OneToOne {
+	Consumer{personalInfo} to PersonalInfo,
+}
+
+
+dto * with mapstruct
+service * with serviceImpl
+paginate * with pagination
+filter *
+
+
+// Set an angular suffix
+// angularSuffix * with mySuffix

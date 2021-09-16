@@ -1,0 +1,43 @@
+<configuration scan="true" scanPeriod="60 seconds">
+    <property name="encoderPattern" value="%d %-5level %logger: %msg%n"/>
+    <property name="fileName" value="log/wallet-console"/>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${fileName}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${fileName}_%d{yyyy-MM-dd_HH}.log</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${encoderPattern}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${encoderPattern}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ASYNC_FILE" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0
+        </discardingThreshold> <!-- default 20, means drop lower event when has 20% capacity remaining -->
+        <appender-ref ref="FILE"/>
+        <queueSize>512</queueSize> <!-- default 256 -->
+    </appender>
+
+    <logger name="ir.shaparak" level="debug" additivity="false">
+        <appender-ref ref="ASYNC_FILE"/>
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <logger name="org.springframework" level="ERROR" additivity="false">
+        <appender-ref ref="ASYNC_FILE"/>
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <root level="error">
+        <appender-ref ref="ASYNC_FILE"/>
+        <!--        <appender-ref ref="FILE"/>-->
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>

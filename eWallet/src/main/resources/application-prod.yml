@@ -1,0 +1,5 @@
+server:
+  port: 443
+
+logging:
+  config: classpath:logback.xml

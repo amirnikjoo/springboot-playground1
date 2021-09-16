@@ -1,0 +1,14 @@
+databaseChangeLog:
+- changeSet:
+  id: myid21
+  author: amir
+  changes:
+      -insert:
+          tableName: comment
+          columns:
+              - column:
+                    name: id
+                    value: "1"
+              - column:
+                    name: desc
+                    value: "test2"

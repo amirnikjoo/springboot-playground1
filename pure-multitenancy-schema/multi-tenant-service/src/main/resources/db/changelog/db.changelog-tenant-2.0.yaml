@@ -1,0 +1,30 @@
+databaseChangeLog:
+
+- changeSet:
+    id: comment
+    author: bjobes
+    changes:
+    - createSequence:
+        sequenceName: comment_seq
+        startValue: 100000
+        incrementBy: 1
+    - createTable:
+        tableName: comment
+        columns:
+        - column:
+            name: id
+            type: BIGINT
+            constraints:
+              primaryKey: true
+              primaryKeyName: comment_pkey
+        - column:
+            name: version
+            type: INTEGER
+            constraints:
+              nullable: false
+            defaultValueNumeric: 0
+        - column:
+            name: desc
+            type: VARCHAR(255)
+            constraints:
+              nullable: false

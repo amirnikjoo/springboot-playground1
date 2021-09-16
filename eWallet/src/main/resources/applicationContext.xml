@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+    <import resource="personal_wallet_config.xml"/>
+    <import resource="personal_wallet_offline_config.xml"/>
+
+    <!--bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource"
+          destroy-method="close">
+        <property name="driverClassName" value="org.mariadb.jdbc.Driver" />
+        <property name="url" value="jdbc:mysql://localhost:3306/wallet" />
+        <property name="username" value="root" />
+        <property name="password" value="qwer" />
+    </bean-->
+
+</beans>

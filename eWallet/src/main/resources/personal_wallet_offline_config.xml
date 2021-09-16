@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="registerPersonalTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="1"/>
+        <property name="maxPoolSize" value="1"/>
+        <property name="keepAliveSeconds" value="60"/>
+        <property name="queueCapacity" value="128"/>
+    </bean>
+
+    <bean id="fetchRegisterRequests" class="ir.shaparak.eWallet.offline.runner.FetchRegisterRequests">
+        <property name="offlineRegisterFlow" ref="offlineRegisterFlow"/>
+        <property name="walletRequestRepository" ref="walletRequestRepository"/>
+        <property name="taskExecutor" ref="registerPersonalTaskExecutor"/>
+    </bean>
+
+    <bean id="offlineRegisterFlow" class="ir.shaparak.eWallet.offline.chain.OfflineRegisterFlow">
+        <property name="handlers">
+            <list>
+                <ref bean="checkWalletTotalCountJob"/>
+                <ref bean="processBasedOnPersonType"/>
+                <!-- <ref bean="callShahkar"/>-->
+<!--                <ref bean="callShahkarErrorDummy"/>-->
+                <ref bean="callShahkarDummy"/>
+                <ref bean="updateWalletRequest4Shahkar"/>
+                <!-- <ref bean="callPost"/>-->
+                <ref bean="callPostOfficeDummy"/>
+                <ref bean="updateWalletRequest4Post"/>
+                <ref bean="getUser"/>
+                <ref bean="processBasedOnRiskLevel"/>
+                <ref bean="generateWalletId"/>
+                <!-- <ref bean="callSwitch"/>-->
+                <ref bean="callSwitchDummy"/>
+                <ref bean="updateWalletRequest4Switch"/>
+                <ref bean="prepareAndInsertPersonalWalletAccount"/>
+                <ref bean="insertPersonalWallet"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="checkWalletTotalCountJob" class="ir.shaparak.eWallet.offline.handlers.CheckWalletTotalCount4Job">
+        <property name="personalWalletRepository" ref="personalWalletRepository"/>
+    </bean>
+
+    <bean id="processBasedOnPersonType" class="ir.shaparak.eWallet.offline.handlers.ProcessBasedOnPersonType">
+        <property name="personTypeMap">
+            <map>
+                <entry key="1" value-ref="RealPersonProcessor"/>
+                <!--                <entry key="2" value-ref="personTypeCorporatePerson"/>-->
+                <!--                <entry key="3" value-ref="personTypeForeignRealPerson"/>-->
+            </map>
+        </property>
+    </bean>
+
+    <bean id="processBasedOnRiskLevel" class="ir.shaparak.eWallet.offline.handlers.ProcessBasedOnRiskLevel">
+        <property name="riskLevelMap">
+            <map>
+                <entry key="2" value-ref="riskLevel2Processor"/>
+                <!--                   <entry key="3" value-ref="riskLevel3Processor"/>-->
+            </map>
+        </property>
+    </bean>
+
+    <bean id="riskLevel2Processor" class="ir.shaparak.eWallet.offline.handlers.RiskLevel2Processor">
+        <property name="personalWalletRepository" ref="personalWalletRepository"/>
+        <!--        <property name="callSiam" ref="callSiam"/>-->
+        <property name="callSiam" ref="callSiamDummy"/>
+        <!--        <property name="callMana" ref="callMana"/>-->
+        <property name="callMana" ref="callManaDummy"/>
+    </bean>
+
+    <bean id="RealPersonProcessor" class="ir.shaparak.eWallet.offline.chain.RealPersonProcessor">
+        <property name="handlers">
+            <list>
+                <!--                <ref bean="callSabteAhval"/>-->
+                <ref bean="callSabteAhvalDummy"/>
+                <ref bean="updateWalletRequest4SabteAhval"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="firstStep" class="ir.shaparak.eWallet.offline.handlers.FirstStep"/>
+
+    <bean id="getUser" class="ir.shaparak.eWallet.offline.handlers.GetUser">
+        <property name="userRepository" ref="userRepository"/>
+    </bean>
+
+    <bean id="generateWalletId" class="ir.shaparak.eWallet.offline.handlers.GenerateWalletId"/>
+
+    <bean id="insertPersonalWallet" class="ir.shaparak.eWallet.offline.handlers.InsertPersonalWallet">
+        <property name="personalWalletRepository" ref="personalWalletRepository"/>
+    </bean>
+
+    <bean id="prepareAndInsertPersonalWalletAccount"
+          class="ir.shaparak.eWallet.offline.handlers.PrepareAndInsertPersonalWalletAccount">
+        <property name="personalWalletAccountRepository" ref="personalWalletAccountRepository"/>
+    </bean>
+
+    <bean id="updateWalletRequest4SabteAhval" class="ir.shaparak.eWallet.offline.handlers.SetWalletRequestStep">
+        <property name="walletRequestRepository" ref="walletRequestRepository"/>
+        <property name="step" value="1"/>
+    </bean>
+
+    <bean id="updateWalletRequest4Shahkar" class="ir.shaparak.eWallet.offline.handlers.SetWalletRequestStep">
+        <property name="walletRequestRepository" ref="walletRequestRepository"/>
+        <property name="step" value="2"/>
+    </bean>
+
+    <bean id="updateWalletRequest4Post" class="ir.shaparak.eWallet.offline.handlers.SetWalletRequestStep">
+        <property name="walletRequestRepository" ref="walletRequestRepository"/>
+        <property name="step" value="3"/>
+    </bean>
+
+    <bean id="updateWalletRequest4Switch" class="ir.shaparak.eWallet.offline.handlers.SetWalletRequestStep">
+        <property name="walletRequestRepository" ref="walletRequestRepository"/>
+        <property name="step" value="4"/>
+    </bean>
+
+    <bean id="callSabteAhvalDummy" class="ir.shaparak.eWallet.offline.dummy.CallSabteAhvalDummy"/>
+
+    <bean id="callShahkarDummy" class="ir.shaparak.eWallet.offline.dummy.CallShahkarDummy"/>
+
+    <bean id="callShahkarErrorDummy" class="ir.shaparak.eWallet.offline.dummy.CallShahkarErrorDummy"/>
+
+    <bean id="callPostOfficeDummy" class="ir.shaparak.eWallet.offline.dummy.CallPostOfficeDummy"/>
+
+    <bean id="callSwitchDummy" class="ir.shaparak.eWallet.offline.dummy.CallSwitchDummy"/>
+
+    <bean id="callSiamDummy" class="ir.shaparak.eWallet.offline.dummy.CallSiamDummy"/>
+
+    <bean id="callManaDummy" class="ir.shaparak.eWallet.offline.dummy.CallManaDummy"/>
+
+    <bean id="fetchChangeRiskLevelRequests" class="ir.shaparak.eWallet.offline.runner.FetchChangeRiskLevelRequests">
+        <property name="offlineChangeLevelFlow" ref="offlineChangeLevelFlow"/>
+        <property name="walletRequestRepository" ref="walletRequestRepository"/>
+        <property name="taskExecutor" ref="registerPersonalTaskExecutor"/>  <!-- todo separate executors -->
+    </bean>
+
+    <bean id="offlineChangeLevelFlow" class="ir.shaparak.eWallet.offline.chain.OfflineChangeLevelFlow">
+        <property name="handlers">
+            <list>
+                <ref bean="getUser"/>
+                <ref bean="processBasedOnRiskLevel"/>
+                <ref bean="callSwitchDummy"/>
+                <ref bean="updateWalletRequest4Switch"/>
+                <ref bean="disablePreviousPersonalWalletAccounts"/>
+                <ref bean="insertPersonalWalletAccountList"/>
+                <ref bean="updateRiskLevelInPersonalWallet"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="disablePreviousPersonalWalletAccounts"
+          class="ir.shaparak.eWallet.offline.handlers.DisablePreviousPersonalWalletAccounts">
+        <property name="personalWalletAccountRepository" ref="personalWalletAccountRepository"/>
+    </bean>
+
+    <bean id="insertPersonalWalletAccountList" class="ir.shaparak.eWallet.offline.handlers.InsertPersonalWalletAccountList">
+        <property name="personalWalletAccountRepository" ref="personalWalletAccountRepository"/>
+    </bean>
+
+    <bean id="updateRiskLevelInPersonalWallet"
+          class="ir.shaparak.eWallet.offline.handlers.UpdateRiskLevelInPersonalWallet">
+        <property name="personalWalletRepository" ref="personalWalletRepository"/>
+    </bean>
+
+    <bean id="fetchChangeStatusRequests" class="ir.shaparak.eWallet.offline.runner.FetchChangeStatusRequests">
+        <property name="offlineChangeStatusFlow" ref="offlineChangeStatusFlow"/>
+        <property name="walletRequestRepository" ref="walletRequestRepository"/>
+        <property name="taskExecutor" ref="registerPersonalTaskExecutor"/>  <!-- todo separate executors -->
+    </bean>
+
+    <bean id="offlineChangeStatusFlow" class="ir.shaparak.eWallet.offline.chain.OfflineChangeStatusFlow">
+        <property name="handlers">
+            <list>
+                <ref bean="callSwitchDummy"/>
+                <ref bean="updateWalletRequest4Switch"/>
+                <ref bean="updatePersonalWalletStatus"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="updatePersonalWalletStatus"
+          class="ir.shaparak.eWallet.offline.handlers.UpdatePersonalWalletStatus">
+        <property name="personalWalletRepository" ref="personalWalletRepository"/>
+    </bean>
+
+    <bean id="fetchChangeMobileNoRequests" class="ir.shaparak.eWallet.offline.runner.FetchChangeMobileNoRequests">
+        <property name="offlineChangeMobileNoFlow" ref="offlineChangeMobileNoFlow"/>
+        <property name="walletRequestRepository" ref="walletRequestRepository"/>
+        <property name="taskExecutor" ref="registerPersonalTaskExecutor"/>  <!-- todo separate executors -->
+    </bean>
+
+    <bean id="offlineChangeMobileNoFlow" class="ir.shaparak.eWallet.offline.chain.OfflineChangeMobileNoFlow">
+        <property name="handlers">
+            <list>
+                <!-- <ref bean="callShahkar"/>-->
+                <ref bean="callShahkarDummy"/>
+                <ref bean="updateWalletRequest4Shahkar"/>
+                <ref bean="callSwitchDummy"/>
+                <ref bean="updateWalletRequest4Switch"/>
+                <ref bean="updatePersonalWalletMobileNo"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="updatePersonalWalletMobileNo"
+          class="ir.shaparak.eWallet.offline.handlers.UpdatePersonalWalletMobileNo">
+        <property name="personalWalletRepository" ref="personalWalletRepository"/>
+    </bean>
+
+    <bean id="fetchAddAccountRequests" class="ir.shaparak.eWallet.offline.runner.FetchAddAccountRequests">
+        <property name="offlineAddAccountFlow" ref="offlineAddAccountFlow"/>
+        <property name="walletRequestRepository" ref="walletRequestRepository"/>
+        <property name="taskExecutor" ref="registerPersonalTaskExecutor"/>  <!-- todo separate executors -->
+    </bean>
+
+    <bean id="offlineAddAccountFlow" class="ir.shaparak.eWallet.offline.chain.OfflineAddAccountFlow">
+        <property name="handlers">
+            <list>
+                <ref bean="getUser"/>
+                <ref bean="getWalletByIdAndUserId"/>
+                <ref bean="processBasedOnRiskLevel4AddAccount"/>
+                <ref bean="callSwitchDummy"/>
+                <ref bean="updateWalletRequest4Switch"/>
+                <ref bean="insertPersonalWalletAccount"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="processBasedOnRiskLevel4AddAccount"
+          class="ir.shaparak.eWallet.offline.handlers.ProcessBasedOnRiskLevel4AddAccount">
+        <property name="riskLevelMap">
+            <map>
+                <entry key="2" value-ref="riskLevel2Processor4AddAccount"/>
+                <!--                   <entry key="3" value-ref="riskLevel3Processor4AddAccount"/>-->
+            </map>
+        </property>
+    </bean>
+
+    <bean id="riskLevel2Processor4AddAccount" class="ir.shaparak.eWallet.offline.handlers.RiskLevel2Processor4AddAccount">
+        <!--        <property name="callSiam" ref="callSiam"/>-->
+        <property name="callSiam" ref="callSiamDummy"/>
+        <!--        <property name="callMana" ref="callMana"/>-->
+        <property name="callMana" ref="callManaDummy"/>
+    </bean>
+
+    <bean id="insertPersonalWalletAccount" class="ir.shaparak.eWallet.offline.handlers.InsertPersonalWalletAccount">
+        <property name="personalWalletAccountRepository" ref="personalWalletAccountRepository"/>
+    </bean>
+
+    <bean id="fetchRemoveAccountRequests" class="ir.shaparak.eWallet.offline.runner.FetchRemoveAccountRequests">
+        <property name="offlineRemoveAccountFlow" ref="offlineRemoveAccountFlow"/>
+        <property name="walletRequestRepository" ref="walletRequestRepository"/>
+        <property name="taskExecutor" ref="registerPersonalTaskExecutor"/>  <!-- todo separate executors -->
+    </bean>
+
+    <bean id="offlineRemoveAccountFlow" class="ir.shaparak.eWallet.offline.chain.OfflineRemoveAccountFlow">
+        <property name="handlers">
+            <list>
+                <ref bean="getUser"/>
+                <ref bean="getWalletByIdAndUserId"/>
+                <ref bean="callSwitchDummy"/>
+                <ref bean="updateWalletRequest4Switch"/>
+                <ref bean="inactivePersonalWalletAccount4Remove"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="inactivePersonalWalletAccount4Remove" class="ir.shaparak.eWallet.offline.handlers.InactivePersonalWalletAccount4Remove">
+        <property name="personalWalletAccountRepository" ref="personalWalletAccountRepository"/>
+    </bean>
+
+</beans>

@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="registerFlow" class="ir.shaparak.eWallet.handlers.chain.RegisterFlow">
+        <property name="handlers">
+            <list>
+                <ref bean="setReferenceNumber"/>
+<!--                <ref bean="wrapRegisterRequestObject"/>-->
+                <ref bean="checkUser"/>
+                <!-- <ref bean="checkUserDummy"/>-->
+                <ref bean="checkAccountBasedOnRiskLevel"/>
+                <ref bean="checkRegisterRequestValidation"/>
+                <ref bean="checkDuplicateWalletRequest"/>
+                <ref bean="checkWalletTotalCount"/>
+                <ref bean="preparePersonalRegisterResponse"/>
+                <ref bean="insertRegisterWalletRequest"/>
+            </list>
+        </property>
+        <property name="exceptionHandler">
+            <list>
+                <ref bean="preparePersonalRegisterResponse"/>
+                <ref bean="insertRegisterWalletRequest"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="setReferenceNumber" class="ir.shaparak.eWallet.handlers.SetReferenceNumber"/>
+
+    <bean id="checkUser" class="ir.shaparak.eWallet.handlers.CheckUser">
+        <property name="userRepository" ref="userRepository"/>
+    </bean>
+
+    <bean id="checkUserDummy" class="ir.shaparak.eWallet.handlers.dummy.CheckUserDummy"/>
+
+    <bean id="insertRegisterWalletRequest" class="ir.shaparak.eWallet.handlers.InsertRegisterWalletRequest">
+        <property name="walletRequestRepository" ref="walletRequestRepository"/>
+    </bean>
+
+    <bean id="preparePersonalRegisterResponse"
+          class="ir.shaparak.eWallet.handlers.wrapper.response.PreparePersonalRegisterResponse"/>
+
+    <bean id="checkAccountBasedOnRiskLevel" class="ir.shaparak.eWallet.handlers.CheckAccountBasedOnRiskLevel"/>
+
+    <bean id="wrapRegisterRequestObject" class="ir.shaparak.eWallet.handlers.wrapper.WrapRegisterRequestObject"/>
+
+    <bean id="checkRegisterRequestValidation" class="ir.shaparak.eWallet.handlers.CheckRegisterRequestValidation"/>
+
+    <bean id="checkDuplicateWalletRequest" class="ir.shaparak.eWallet.handlers.CheckDuplicateWalletRequest">
+        <property name="personalWalletRepository" ref="personalWalletRepository"/>
+    </bean>
+
+    <bean id="checkWalletTotalCount" class="ir.shaparak.eWallet.handlers.CheckWalletTotalCount">
+        <property name="personalWalletRepository" ref="personalWalletRepository"/>
+    </bean>
+
+    <bean id="changeRiskLevelFlow" class="ir.shaparak.eWallet.handlers.chain.ChangeRiskLevelFlow">
+        <property name="handlers">
+            <list>
+                <ref bean="setReferenceNumber"/>
+                <ref bean="checkUser"/>
+                <!--                <ref bean="checkUserDummy"/>-->
+<!--                <ref bean="wrapChangeRiskLevelObject"/>-->
+                <ref bean="getWalletByIdAndUserId"/>
+                <ref bean="checkWalletCurrentStatus"/>
+                <ref bean="checkAccountBasedOnOldNewRiskLevel"/>
+                <ref bean="checkLevel3Validation"/>
+                <ref bean="preparePersonalChangeRiskLevelResponse"/>
+                <ref bean="insertChangeRiskLevelWalletRequest"/>
+            </list>
+        </property>
+        <property name="exceptionHandler">
+            <list>
+                <ref bean="preparePersonalChangeRiskLevelResponse"/>
+                <ref bean="insertChangeRiskLevelWalletRequest"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="getWalletByIdAndUserId" class="ir.shaparak.eWallet.handlers.GetWalletByIdAndUserId">
+        <property name="personalWalletRepository" ref="personalWalletRepository"/>
+    </bean>
+
+    <bean id="checkWalletCurrentStatus" class="ir.shaparak.eWallet.handlers.CheckWalletCurrentStatus"/>
+
+    <bean id="checkAccountBasedOnOldNewRiskLevel"
+          class="ir.shaparak.eWallet.handlers.CheckAccountBasedOnOldNewRiskLevel">
+        <property name="oldNewRiskLevelMap">
+            <map>
+                <entry key="1-2" value-ref="checkChangeRiskLevelAccounts"/>
+                <!--   <entry key="2-1" value-ref="check nothing"/>-->
+                <entry key="2-3" value-ref="checkChangeRiskLevelAccounts"/>
+                <entry key="3-2" value-ref="checkChangeRiskLevelAccounts"/>
+                <!--   <entry key="3-1" value-ref="check nothing"/>-->
+            </map>
+        </property>
+    </bean>
+
+    <bean id="checkLevel3Validation" class="ir.shaparak.eWallet.handlers.CheckLevel3Validation"/>
+
+    <bean id="insertChangeRiskLevelWalletRequest"
+          class="ir.shaparak.eWallet.handlers.InsertChangeRiskLevelWalletRequest">
+        <property name="walletRequestRepository" ref="walletRequestRepository"/>
+    </bean>
+
+    <bean id="checkChangeRiskLevelAccounts" class="ir.shaparak.eWallet.handlers.CheckChangeRiskLevelAccounts"/>
+
+    <bean id="preparePersonalChangeRiskLevelResponse"
+          class="ir.shaparak.eWallet.handlers.wrapper.response.PreparePersonalChangeRiskLevelResponse"/>
+
+    <bean id="changeStatusFlow" class="ir.shaparak.eWallet.handlers.chain.ChangeStatusFlow">
+        <property name="handlers">
+            <list>
+                <ref bean="setReferenceNumber"/>
+                <ref bean="checkUser"/>
+                <!-- <ref bean="checkUserDummy"/>-->
+<!--                <ref bean="wrapChangeStatusObject"/>-->
+                <ref bean="getWalletByIdAndUserId"/>
+                <ref bean="checkWalletCurrentStatusByUserId"/>
+                <ref bean="preparePersonalChangeStatusResponse"/>
+                <ref bean="insertChangeStatusWalletRequest"/>
+            </list>
+        </property>
+        <property name="exceptionHandler">
+            <list>
+                <ref bean="preparePersonalChangeStatusResponse"/>
+                <ref bean="insertChangeStatusWalletRequest"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="checkWalletCurrentStatusByUserId"
+          class="ir.shaparak.eWallet.handlers.CheckWalletCurrentStatusBasedOnUserId"/>
+
+    <bean id="insertChangeStatusWalletRequest"
+          class="ir.shaparak.eWallet.handlers.InsertChangeStatusWalletRequest">
+        <property name="walletRequestRepository" ref="walletRequestRepository"/>
+    </bean>
+
+    <bean id="preparePersonalChangeStatusResponse"
+          class="ir.shaparak.eWallet.handlers.wrapper.response.PreparePersonalChangeStatusResponse"/>
+
+    <bean id="changeMobileNoFlow" class="ir.shaparak.eWallet.handlers.chain.ChangeMobileNoFlow">
+        <property name="handlers">
+            <list>
+                <ref bean="setReferenceNumber"/>
+                <ref bean="checkUser"/>
+                <!-- <ref bean="checkUserDummy"/>-->
+<!--                <ref bean="wrapChangeMobileNoObject"/>-->
+                <ref bean="checkChangeMobileNoRequestValidation"/>
+                <ref bean="getWalletByIdAndUserId"/>
+                <ref bean="preparePersonalChangeMobileNoResponse"/>
+                <ref bean="insertChangeMobileNo2WalletRequest"/>
+            </list>
+        </property>
+        <property name="exceptionHandler">
+            <list>
+                <ref bean="preparePersonalChangeMobileNoResponse"/>
+                <ref bean="insertChangeMobileNo2WalletRequest"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="wrapChangeMobileNoObject" class="ir.shaparak.eWallet.handlers.wrapper.WrapChangeMobileNoObject"/>
+
+    <bean id="checkChangeMobileNoRequestValidation" class="ir.shaparak.eWallet.handlers.CheckChangeMobileNoRequestValidation"/>
+
+    <bean id="insertChangeMobileNo2WalletRequest"
+          class="ir.shaparak.eWallet.handlers.InsertChangeMobileNo2WalletRequest">
+        <property name="walletRequestRepository" ref="walletRequestRepository"/>
+    </bean>
+
+    <bean id="preparePersonalChangeMobileNoResponse"
+          class="ir.shaparak.eWallet.handlers.wrapper.response.PreparePersonalChangeMobileNoResponse"/>
+
+    <bean id="wrapChangeRiskLevelObject" class="ir.shaparak.eWallet.handlers.wrapper.WrapChangeRiskLevelObject"/>
+
+    <bean id="wrapChangeStatusObject" class="ir.shaparak.eWallet.handlers.wrapper.WrapChangeStatusObject"/>
+
+    <bean id="changeAccountFlow" class="ir.shaparak.eWallet.handlers.chain.ChangeAccountFlow">
+        <property name="handlers">
+            <list>
+                <ref bean="setReferenceNumber"/>
+                <ref bean="checkUser"/>
+                <!--                <ref bean="checkUserDummy"/>-->
+<!--                <ref bean="wrapChangeAccountObject"/>-->
+                <ref bean="getWalletByIdAndUserId"/>
+                <ref bean="checkRiskLevel4ChangeAccount"/>
+                <ref bean="checkPersonalWalletAccountExist"/>
+                <ref bean="preparePersonalChangeAccountResponse"/>
+                <ref bean="insertChangeAccount2WalletRequest"/>
+            </list>
+        </property>
+        <property name="exceptionHandler">
+            <list>
+                <ref bean="preparePersonalChangeAccountResponse"/>
+                <ref bean="insertChangeAccount2WalletRequest"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="wrapChangeAccountObject" class="ir.shaparak.eWallet.handlers.wrapper.WrapChangeAccountObject"/>
+
+    <bean id="checkRiskLevel4ChangeAccount" class="ir.shaparak.eWallet.handlers.CheckRiskLevel4ChangeAccount"/>
+
+    <bean id="checkPersonalWalletAccountExist" class="ir.shaparak.eWallet.handlers.CheckPersonalWalletAccountExist">
+        <property name="personalWalletAccountRepository" ref="personalWalletAccountRepository"/>
+    </bean>
+
+    <bean id="insertChangeAccount2WalletRequest"
+          class="ir.shaparak.eWallet.handlers.InsertChangeAccount2WalletRequest">
+        <property name="walletRequestRepository" ref="walletRequestRepository"/>
+    </bean>
+
+    <bean id="preparePersonalChangeAccountResponse"
+          class="ir.shaparak.eWallet.handlers.wrapper.response.PreparePersonalChangeAccountResponse"/>
+
+
+    <bean id="inquiryFlow" class="ir.shaparak.eWallet.handlers.chain.InquiryFlow">
+        <property name="handlers">
+            <list>
+                <ref bean="setReferenceNumber"/>
+                <ref bean="checkUser"/>
+<!--                <ref bean="wrapInquiryObject"/>-->
+                <ref bean="getOriginalRequest"/>
+                <ref bean="preparePersonalInquiryResponse"/>
+                <ref bean="insertInquiryWalletRequest"/>
+            </list>
+        </property>
+        <property name="exceptionHandler">
+            <list>
+                <ref bean="preparePersonalInquiryResponse"/>
+                <ref bean="insertInquiryWalletRequest"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="wrapInquiryObject" class="ir.shaparak.eWallet.handlers.wrapper.WrapInquiryObject"/>
+
+    <bean id="getOriginalRequest"
+          class="ir.shaparak.eWallet.handlers.GetOriginalRequest">
+        <property name="walletRequestRepository" ref="walletRequestRepository"/>
+    </bean>
+
+    <bean id="insertInquiryWalletRequest"
+          class="ir.shaparak.eWallet.handlers.InsertInquiryWalletRequest">
+        <property name="walletRequestRepository" ref="walletRequestRepository"/>
+    </bean>
+
+    <bean id="preparePersonalInquiryResponse"
+          class="ir.shaparak.eWallet.handlers.wrapper.response.PreparePersonalInquiryResponse">
+        <property name="personalWalletRepository" ref="personalWalletRepository"/>
+    </bean>
+
+</beans>
